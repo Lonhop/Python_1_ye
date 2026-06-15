@@ -1,9 +1,0 @@
-streamlit
-pandas
-numpy
-matplotlib
-seaborn
-pyarrow
-fastapi
-uvicorn
-duckdb
