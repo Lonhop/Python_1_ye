@@ -184,28 +184,22 @@ def apply_glass_theme(fig, axes=None):
 
 @st.cache_data(show_spinner="Fetching data …")
 def load_data():
-    try:
-        df = pd.read_parquet("../data/blackjack_simulator.parquet")
-    except Exception:
-        df = pd.read_csv("blackjack_simulator.csv")
-
-    df["initial_value"] = df["initial_hand"].apply(
-        lambda x: sum(literal_eval(x))
-    )
-    df["hand_strength"] = pd.cut(
-        df["initial_value"], bins=[0, 12, 16, 21],
-        labels=["Weak", "Medium", "Strong"],
-    )
-    df["tc_group"] = pd.cut(
-        df["true_count"], bins=[-22, -5, -1, 1, 5, 22],
-        labels=["Very Low", "Low", "Neutral", "High", "Very High"],
-    )
-    df["dealer_strength"] = np.where(
-        df["dealer_up"].isin([2, 3, 4, 5, 6]), "Weak", "Strong"
-    )
-    df["blackjack"] = (
-        df["player_final_value"].astype(str).str.contains("BJ")
-    ).astype(int)
+    df = pd.read_csv("../data/blackjack_simulator_small.csv")
+    
+    if "initial_value" not in df.columns:
+        df["initial_value"] = df["initial_hand"].apply(lambda x: sum(literal_eval(x)))
+    if "hand_strength" not in df.columns:
+        df["hand_strength"] = pd.cut(df["initial_value"], bins=[0,12,16,21],
+            labels=["Weak","Medium","Strong"])
+    if "tc_group" not in df.columns:
+        df["tc_group"] = pd.cut(df["true_count"], bins=[-22,-5,-1,1,5,22],
+            labels=["Very Low","Low","Neutral","High","Very High"])
+    if "dealer_strength" not in df.columns:
+        df["dealer_strength"] = df["dealer_up"].map({
+            2:"Weak",3:"Weak",4:"Weak",5:"Weak",6:"Weak",
+            7:"Strong",8:"Strong",9:"Strong",10:"Strong",11:"Strong"})
+    if "blackjack" not in df.columns:
+        df["blackjack"] = df["player_final_value"].astype(str).str.contains("BJ").astype(int)
     return df
 
 
