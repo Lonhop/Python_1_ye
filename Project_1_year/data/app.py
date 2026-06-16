@@ -168,6 +168,7 @@ with st.sidebar:
 
 
 def apply_glass_theme(fig, axes=None):
+    """Make matplotlib figures transparent so the glass bg shows through."""
     fig.patch.set_alpha(0)
     for ax in (axes if axes is not None else fig.axes):
         ax.set_facecolor("none")
@@ -186,10 +187,6 @@ def apply_glass_theme(fig, axes=None):
 def load_data():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     df = pd.read_csv(os.path.join(BASE_DIR, "blackjack_simulator_small.csv"))
-<<<<<<< HEAD
-=======
-    
->>>>>>> f5aad40dc76c9c7c11a36b425d172e8a2bc6b557
     if "initial_value" not in df.columns:
         df["initial_value"] = df["initial_hand"].apply(lambda x: sum(literal_eval(x)))
     if "hand_strength" not in df.columns:
