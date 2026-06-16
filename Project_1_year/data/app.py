@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from ast import literal_eval
+import os
 
 st.set_page_config(
     page_title="Blackjack Big Data Analysis",
@@ -167,7 +168,6 @@ with st.sidebar:
 
 
 def apply_glass_theme(fig, axes=None):
-    """Make matplotlib figures transparent so the glass bg shows through."""
     fig.patch.set_alpha(0)
     for ax in (axes if axes is not None else fig.axes):
         ax.set_facecolor("none")
@@ -184,7 +184,8 @@ def apply_glass_theme(fig, axes=None):
 
 @st.cache_data(show_spinner="Fetching data …")
 def load_data():
-    df = pd.read_csv("../data/blackjack_simulator_small.csv")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    df = pd.read_csv(os.path.join(BASE_DIR, "blackjack_simulator_small.csv"))
     
     if "initial_value" not in df.columns:
         df["initial_value"] = df["initial_hand"].apply(lambda x: sum(literal_eval(x)))
