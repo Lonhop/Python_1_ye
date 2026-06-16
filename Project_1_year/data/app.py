@@ -187,8 +187,17 @@ def apply_glass_theme(fig, axes=None):
 def load_data():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     df = pd.read_csv(os.path.join(BASE_DIR, "blackjack_simulator_small.csv"))
+
+    def hand_value(cards_str):
+        cards = literal_eval(cards_str)
+        total = sum(cards)
+        aces = cards.count(11)
+        while total > 21 and aces > 0:
+            total -= 10
+            aces -= 1
+        return total
     if "initial_value" not in df.columns:
-        df["initial_value"] = df["initial_hand"].apply(lambda x: sum(literal_eval(x)))
+        df["initial_value"] = df["initial_hand"].apply(hand_value)
     if "hand_strength" not in df.columns:
         df["hand_strength"] = pd.cut(df["initial_value"], bins=[0,12,16,21],
             labels=["Weak","Medium","Strong"])
