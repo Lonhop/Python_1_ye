@@ -524,41 +524,43 @@ elif section == "🔍 Deep Dive Comparisons":
             st.warning("Not enough data for MIN_N.")
         else:
             slope = (
-                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0]) / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
-                )
+                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0])
+                / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
+            )
             crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
 
-        fig_b, ax_b = plt.subplots(figsize=(10, 5))
-        sns.regplot(
-            data=tc_stats, x="true_count", y="mean", ci=95,
-            scatter_kws={"alpha": 0.55, "color": "#888780",
-                         "s": tc_stats["count"] / 80_000},
-            line_kws={"color": "#1D9E75", "linewidth": 2},
-            ax=ax_b,
-        )
-        ax_b.axhline(0, color="#ffffff80", lw=0.8,
-                     linestyle=":", label="break-even")
-        ax_b.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
-                     alpha=0.6, label="neutral count")
-        ax_b.annotate(f"slope: {slope:+.4f} / count",
-                      xy=(5, 0.055), fontsize=10,
-                      color="#1D9E75", fontweight="bold")
-        ax_b.annotate(
-            f"break-even ≈ tc={crossover}",
-            xy=(crossover, 0),
-            xytext=(crossover + 1.5, -0.035),
-            arrowprops=dict(arrowstyle="->", color="#E24B4A"),
-            fontsize=9, color="#E24B4A",
-        )
-        leg = ax_b.legend(fontsize=9, facecolor="none",
-                          labelcolor="#ffffffd9",
-                          edgecolor="#ffffff33")
-        ax_b.set_title("Win rate rises with true count (n ≥ 10 000)",
-                       fontsize=13, fontweight="bold")
-        ax_b.set_xlabel("True count"); ax_b.set_ylabel("Mean win per hand")
-        apply_glass_theme(fig_b)
-        plt.tight_layout()
-        st.pyplot(fig_b, transparent=True); plt.close(fig_b)
+            fig_b, ax_b = plt.subplots(figsize=(10, 5))
+            sns.regplot(
+                data=tc_stats, x="true_count", y="mean", ci=95,
+                scatter_kws={"alpha": 0.55, "color": "#888780",
+                             "s": tc_stats["count"] / 80_000},
+                line_kws={"color": "#1D9E75", "linewidth": 2},
+                ax=ax_b,
+            )
+            ax_b.axhline(0, color="#ffffff80", lw=0.8,
+                         linestyle=":", label="break-even")
+            ax_b.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
+                         alpha=0.6, label="neutral count")
+            ax_b.annotate(f"slope: {slope:+.4f} / count",
+                          xy=(5, 0.055), fontsize=10,
+                          color="#1D9E75", fontweight="bold")
+            ax_b.annotate(
+                f"break-even ≈ tc={crossover}",
+                xy=(crossover, 0),
+                xytext=(crossover + 1.5, -0.035),
+                arrowprops=dict(arrowstyle="->", color="#E24B4A"),
+                fontsize=9, color="#E24B4A",
+            )
+            leg = ax_b.legend(fontsize=9, facecolor="none",
+                              labelcolor="#ffffffd9",
+                              edgecolor="#ffffff33")
+            ax_b.set_title("Win rate rises with true count (n ≥ 10 000)",
+                           fontsize=13, fontweight="bold")
+            ax_b.set_xlabel("True count"); ax_b.set_ylabel("Mean win per hand")
+            apply_glass_theme(fig_b)
+            plt.tight_layout()
+            st.pyplot(fig_b, transparent=True); plt.close(fig_b)
+
         st.markdown("### Blackjack rate by true count group")
         glass("<p style='margin:0;color:rgba(255,255,255,0.78);font-size:0.92rem'>"
               "High counts have more tens and aces — BJ probability nearly doubles "
@@ -698,47 +700,48 @@ elif section == "🧪 Testing Our Hypotheses":
             st.warning("Not enough data for MIN_N.")
         else:
             slope = (
-                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0]) / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
-                )
+                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0])
+                / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
+            )
             crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
 
-        fig_h1, ax_h1 = plt.subplots(figsize=(10, 5))
-        sns.regplot(
-            data=tc_stats, x="true_count", y="mean", ci=95,
-            scatter_kws={"alpha": 0.55, "color": "#888780",
-                         "s": tc_stats["count"] / 80_000},
-            line_kws={"color": "#1D9E75", "linewidth": 2},
-            ax=ax_h1,
-        )
-        ax_h1.axhline(0, color="#ffffff80", lw=0.8,
-                      linestyle=":", label="break-even")
-        ax_h1.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
-                      alpha=0.7, label="neutral count")
-        ax_h1.annotate(f"slope: {slope:+.4f} / count",
-                       xy=(4, 0.05), fontsize=10,
-                       color="#1D9E75", fontweight="bold")
-        ax_h1.annotate(
-            f"break-even ≈ tc = {crossover}",
-            xy=(crossover, 0),
-            xytext=(crossover + 1.5, -0.033),
-            arrowprops=dict(arrowstyle="->", color="#E24B4A"),
-            fontsize=9, color="#E24B4A",
-        )
-        ax_h1.legend(fontsize=9, facecolor="none",
-                     labelcolor="#ffffffd9",
-                     edgecolor="#ffffff33")
-        ax_h1.set_title("H1: win rate rises with true count (n ≥ 10 000)",
-                        fontsize=13, fontweight="bold")
-        ax_h1.set_xlabel("True count"); ax_h1.set_ylabel("Mean win per hand")
-        apply_glass_theme(fig_h1)
-        plt.tight_layout()
-        st.pyplot(fig_h1, transparent=True); plt.close(fig_h1)
+            fig_h1, ax_h1 = plt.subplots(figsize=(10, 5))
+            sns.regplot(
+                data=tc_stats, x="true_count", y="mean", ci=95,
+                scatter_kws={"alpha": 0.55, "color": "#888780",
+                             "s": tc_stats["count"] / 80_000},
+                line_kws={"color": "#1D9E75", "linewidth": 2},
+                ax=ax_h1,
+            )
+            ax_h1.axhline(0, color="#ffffff80", lw=0.8,
+                          linestyle=":", label="break-even")
+            ax_h1.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
+                          alpha=0.7, label="neutral count")
+            ax_h1.annotate(f"slope: {slope:+.4f} / count",
+                           xy=(4, 0.05), fontsize=10,
+                           color="#1D9E75", fontweight="bold")
+            ax_h1.annotate(
+                f"break-even ≈ tc = {crossover}",
+                xy=(crossover, 0),
+                xytext=(crossover + 1.5, -0.033),
+                arrowprops=dict(arrowstyle="->", color="#E24B4A"),
+                fontsize=9, color="#E24B4A",
+            )
+            ax_h1.legend(fontsize=9, facecolor="none",
+                         labelcolor="#ffffffd9",
+                         edgecolor="#ffffff33")
+            ax_h1.set_title("H1: win rate rises with true count (n ≥ 10 000)",
+                            fontsize=13, fontweight="bold")
+            ax_h1.set_xlabel("True count"); ax_h1.set_ylabel("Mean win per hand")
+            apply_glass_theme(fig_h1)
+            plt.tight_layout()
+            st.pyplot(fig_h1, transparent=True); plt.close(fig_h1)
 
-        st.success(
-            f"✅ **H1 confirmed.** Win rate is monotonically increasing across "
-            f"all five tc_groups. Regression slope = **{slope:+.4f} per count**, "
-            f"break-even at **tc = {crossover}**."
-        )
+            st.success(
+                f"✅ **H1 confirmed.** Win rate is monotonically increasing across "
+                f"all five tc_groups. Regression slope = **{slope:+.4f} per count**, "
+                f"break-even at **tc = {crossover}**."
+            )
 
         st.markdown("---")
         st.markdown("### Hypothesis 2 — BJ probability rises with true count")
