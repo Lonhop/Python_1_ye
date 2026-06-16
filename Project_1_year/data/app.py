@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from ast import literal_eval
+import os
 
 st.set_page_config(
     page_title="Blackjack Big Data Analysis",
@@ -171,21 +172,21 @@ def apply_glass_theme(fig, axes=None):
     fig.patch.set_alpha(0)
     for ax in (axes if axes is not None else fig.axes):
         ax.set_facecolor("none")
-        ax.tick_params(colors="#ffffffb3")
-        ax.xaxis.label.set_color("#ffffffb3")
-        ax.yaxis.label.set_color("#ffffffb3")
-        ax.title.set_color("#fffffff2")
+        ax.tick_params(colors=(1, 1, 1, 0.7))
+        ax.xaxis.label.set_color((1, 1, 1, 0.7))
+        ax.yaxis.label.set_color((1, 1, 1, 0.7))
+        ax.title.set_color((1, 1, 1, 0.95))
         for spine in ax.spines.values():
-            spine.set_edgecolor("#ffffff26")
-        ax.yaxis.grid(True, color="#ffffff14")
+            spine.set_edgecolor((1, 1, 1, 0.15))
+        ax.yaxis.grid(True, color=(1, 1, 1, 0.08))
         ax.set_axisbelow(True)
 
 
 
 @st.cache_data(show_spinner="Fetching data …")
 def load_data():
-    df = pd.read_csv("../data/blackjack_simulator_small.csv")
-    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    df = pd.read_csv(os.path.join(BASE_DIR, "blackjack_simulator_small.csv"))
     if "initial_value" not in df.columns:
         df["initial_value"] = df["initial_hand"].apply(lambda x: sum(literal_eval(x)))
     if "hand_strength" not in df.columns:
@@ -406,7 +407,7 @@ elif section == "📈 Visualizing Distributions":
         ax1.axvspan(q1, q3, alpha=0.12, color="#378ADD", label="IQR")
         ax1.legend(fontsize=10, facecolor="none",
            labelcolor=(1, 1, 1, 0.85),
-           edgecolor=(1, 1, 1, 0.2))
+           edgecolor="white")
         ax1.set_title("True count distribution", fontsize=13, fontweight="bold")
         ax1.set_xlabel("True count"); ax1.set_ylabel("Count")
         apply_glass_theme(fig1)
@@ -432,13 +433,13 @@ elif section == "📈 Visualizing Distributions":
             ax.axvline(m, color="#E24B4A", lw=1.5, linestyle="--",
                        label=f"median = {m:.1f}")
             ax.legend(fontsize=9, facecolor="none",
-                      labelcolor="#ffffffd9",
-                      edgecolor="#ffffff33")
+                      labelcolor="rgba(255,255,255,0.85)",
+                      edgecolor="rgba(255,255,255,0.2)")
             ax.set_title(label, fontsize=12, fontweight="bold")
         apply_glass_theme(fig2, axes2)
         fig2.suptitle("Card counting metrics — distributions",
                       fontsize=14, fontweight="bold",
-                      color="#fffffff2", y=1.02)
+                      color="rgba(255,255,255,0.95)", y=1.02)
         plt.tight_layout()
         st.pyplot(fig2, transparent=True); plt.close(fig2)
 
@@ -455,7 +456,7 @@ elif section == "📈 Visualizing Distributions":
         colors3 = ["#E24B4A" if v < 0 else "#1D9E75" for v in tc_profit.values]
         bars = ax3.barh(tc_profit.index, tc_profit.values,
                         color=colors3, height=0.55)
-        ax3.axvline(0, color="#ffffff80", linewidth=0.8)
+        ax3.axvline(0, color="rgba(255,255,255,0.5)", linewidth=0.8)
         for bar in bars:
             v = bar.get_width()
             ax3.text(
@@ -463,7 +464,7 @@ elif section == "📈 Visualizing Distributions":
                 bar.get_y() + bar.get_height() / 2,
                 f"{v:+.4f}", va="center",
                 ha="left" if v >= 0 else "right",
-                fontsize=10, color="#ffffffe0",
+                fontsize=10, color="rgba(255,255,255,0.88)",
             )
         ax3.set_title("Average profit per hand by count group",
                       fontsize=13, fontweight="bold")
@@ -491,18 +492,18 @@ elif section == "🔍 Deep Dive Comparisons":
         )[TC_ORDER]
         fig_a, ax_a = plt.subplots(figsize=(9, 4))
         sns.heatmap(pivot, annot=True, fmt=".3f", cmap="RdYlGn",
-                    center=0, linewidths=0.5, linecolor="#0000004d",
+                    center=0, linewidths=0.5, linecolor="rgba(0,0,0,0.3)",
                     cbar_kws={"label": "avg win/hand", "shrink": 0.8}, ax=ax_a)
         ax_a.set_title("Avg win — hand strength & true count group",
                        fontsize=13, fontweight="bold",
-                       color="#fffffff2", pad=12)
+                       color="rgba(255,255,255,0.95)", pad=12)
         ax_a.set_xlabel("True count group", fontsize=11,
-                        color="#ffffffbf")
+                        color="rgba(255,255,255,0.75)")
         ax_a.set_ylabel("Hand strength", fontsize=11,
-                        color="#ffffffbf")
+                        color="rgba(255,255,255,0.75)")
         ax_a.tick_params(axis="x", rotation=0,
-                         colors="#ffffffbf")
-        ax_a.tick_params(axis="y", colors="#ffffffbf")
+                         colors="rgba(255,255,255,0.75)")
+        ax_a.tick_params(axis="y", colors="rgba(255,255,255,0.75)")
         fig_a.patch.set_alpha(0); ax_a.set_facecolor("none")
         plt.tight_layout()
         st.pyplot(fig_a, transparent=True); plt.close(fig_a)
@@ -512,18 +513,20 @@ elif section == "🔍 Deep Dive Comparisons":
               "(only counts with ≥ 10 000 hands shown). "
               "Point size encodes sample size. The 95 % CI band confirms the trend.</p>")
 
-        MIN_N = 10_000
+        MIN_N = 20
         tc_stats = (
             df.groupby("true_count")["win"]
             .agg(["mean", "count"])
             .query("count >= @MIN_N")
             .reset_index()
         )
-        slope = (
-            (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0])
-            / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
-        )
-        crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
+        if tc_stats.empty:
+            st.warning("Not enough data for MIN_N.")
+        else:
+            slope = (
+                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0]) / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
+                )
+            crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
 
         fig_b, ax_b = plt.subplots(figsize=(10, 5))
         sns.regplot(
@@ -533,7 +536,7 @@ elif section == "🔍 Deep Dive Comparisons":
             line_kws={"color": "#1D9E75", "linewidth": 2},
             ax=ax_b,
         )
-        ax_b.axhline(0, color="#ffffff80", lw=0.8,
+        ax_b.axhline(0, color="rgba(255,255,255,0.5)", lw=0.8,
                      linestyle=":", label="break-even")
         ax_b.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
                      alpha=0.6, label="neutral count")
@@ -548,8 +551,8 @@ elif section == "🔍 Deep Dive Comparisons":
             fontsize=9, color="#E24B4A",
         )
         leg = ax_b.legend(fontsize=9, facecolor="none",
-                          labelcolor="#ffffffd9",
-                          edgecolor="#ffffff33")
+                          labelcolor="rgba(255,255,255,0.85)",
+                          edgecolor="rgba(255,255,255,0.2)")
         ax_b.set_title("Win rate rises with true count (n ≥ 10 000)",
                        fontsize=13, fontweight="bold")
         ax_b.set_xlabel("True count"); ax_b.set_ylabel("Mean win per hand")
@@ -576,14 +579,14 @@ elif section == "🔍 Deep Dive Comparisons":
                 bar.get_height() + 0.0008,
                 f"{val:.2%}", ha="center", va="bottom",
                 fontsize=10, fontweight="bold",
-                color="#ffffffe6",
+                color="rgba(255,255,255,0.9)",
             )
         baseline = bj_rate["Neutral"]
         ax_c.axhline(baseline, color="#534AB7", lw=1.2, linestyle="--",
                      label=f"neutral = {baseline:.2%}")
         leg_c = ax_c.legend(fontsize=9, facecolor="none",
-                             labelcolor="#ffffffd9",
-                             edgecolor="#ffffff33")
+                             labelcolor="rgba(255,255,255,0.85)",
+                             edgecolor="rgba(255,255,255,0.2)")
         ax_c.set_title("Blackjack rate by true count group",
                        fontsize=13, fontweight="bold")
         ax_c.set_xlabel("True count group")
@@ -618,8 +621,8 @@ elif section == "🔍 Deep Dive Comparisons":
         ax_d.set_xticklabels(TC_ORDER, rotation=0)
         leg_d = ax_d.legend(loc="upper right", fontsize=10,
                              facecolor="none",
-                             labelcolor="#ffffffd9",
-                             edgecolor="#ffffff33")
+                             labelcolor="rgba(255,255,255,0.85)",
+                             edgecolor="rgba(255,255,255,0.2)")
         apply_glass_theme(fig_d)
         plt.tight_layout()
         st.pyplot(fig_d, transparent=True); plt.close(fig_d)
@@ -684,17 +687,20 @@ elif section == "🧪 Testing Our Hypotheses":
             use_container_width=True, hide_index=True,
         )
 
-        MIN_N = 10_000
+        MIN_N = 20
         tc_stats = (
             df.groupby("true_count")["win"]
             .agg(["mean", "count"])
             .query("count >= @MIN_N")
             .reset_index()
         )
-        slope = (
-            (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0]) / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
-        )
-        crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
+        if tc_stats.empty:
+            st.warning("Not enough data for MIN_N.")
+        else:
+            slope = (
+                (tc_stats["mean"].iloc[-1] - tc_stats["mean"].iloc[0]) / (tc_stats["true_count"].iloc[-1] - tc_stats["true_count"].iloc[0])
+                )
+            crossover = tc_stats[tc_stats["mean"] >= 0]["true_count"].min()
 
         fig_h1, ax_h1 = plt.subplots(figsize=(10, 5))
         sns.regplot(
@@ -704,7 +710,7 @@ elif section == "🧪 Testing Our Hypotheses":
             line_kws={"color": "#1D9E75", "linewidth": 2},
             ax=ax_h1,
         )
-        ax_h1.axhline(0, color="#ffffff80", lw=0.8,
+        ax_h1.axhline(0, color="rgba(255,255,255,0.5)", lw=0.8,
                       linestyle=":", label="break-even")
         ax_h1.axvline(0, color="#534AB7", lw=0.8, linestyle="--",
                       alpha=0.7, label="neutral count")
@@ -719,8 +725,8 @@ elif section == "🧪 Testing Our Hypotheses":
             fontsize=9, color="#E24B4A",
         )
         ax_h1.legend(fontsize=9, facecolor="none",
-                     labelcolor="#ffffffd9",
-                     edgecolor="#ffffff33")
+                     labelcolor="rgba(255,255,255,0.85)",
+                     edgecolor="rgba(255,255,255,0.2)")
         ax_h1.set_title("H1: win rate rises with true count (n ≥ 10 000)",
                         fontsize=13, fontweight="bold")
         ax_h1.set_xlabel("True count"); ax_h1.set_ylabel("Mean win per hand")
@@ -766,8 +772,8 @@ elif section == "🧪 Testing Our Hypotheses":
                                  bj_rate["Neutral"],
                                  alpha=0.12, color="#1D9E75")
             ax_h2a.legend(fontsize=8, facecolor="none",
-                          labelcolor="#ffffffd9",
-                          edgecolor="#ffffff33")
+                          labelcolor="rgba(255,255,255,0.85)",
+                          edgecolor="rgba(255,255,255,0.2)")
             ax_h2a.set_title("BJ rate vs count group",
                              fontsize=11, fontweight="bold")
             ax_h2a.set_xlabel("True count group")
@@ -787,7 +793,7 @@ elif section == "🧪 Testing Our Hypotheses":
                 line_kws={"color": "#1D9E75", "linewidth": 2},
                 ax=ax_h2b,
             )
-            ax_h2b.axvline(0, color="#ffffff66", lw=0.8,
+            ax_h2b.axvline(0, color="rgba(255,255,255,0.4)", lw=0.8,
                            linestyle=":")
             ax_h2b.set_title("BJ probability vs true count",
                              fontsize=11, fontweight="bold")
