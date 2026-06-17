@@ -382,17 +382,6 @@ elif section == "🧹 Data Quality & Cleanup":
             else:
                 st.error(f"❌ {check}")
 
-        st.markdown("### Extreme true_count rows (|tc| = 22)")
-        extreme = df[df["true_count"].abs() == 22]
-        st.info(
-            f"Only **{len(extreme)} rows** reach |true_count| = 22. "
-            "Too few for reliable statistics — filtered out in hypothesis testing."
-        )
-        st.dataframe(
-            extreme[["shoe_id", "cards_remaining", "true_count", "win"]],
-            use_container_width=True, hide_index=True,
-        )
-
 
 elif section == "📈 Visualizing Distributions":
     st.title("📈 Feature Distributions")
