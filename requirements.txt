@@ -7,3 +7,5 @@ pyarrow
 fastapi
 uvicorn
 duckdb
+discord.py
+python-dotenv
